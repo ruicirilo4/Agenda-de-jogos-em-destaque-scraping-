@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web Scraping</title>
+  <style>
+    
+     body {
+            font-family: Arial, sans-serif;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        th, td {
+            border: 1px solid #dddddd;
+            text-align: left;
+            padding: 8px;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+  </style>
+</head>
+<body>
+    <table>
+        <thead>
+            <tr>
+                <th></th>
+                <th></th>
+                <th></th>
+                <!-- Adicione mais colunas conforme necessário -->
+            </tr>
+        </thead>
+        <tbody id="tableData">
+            <!-- Os dados da tabela serão inseridos aqui -->
+        </tbody>
+    </table>
+
+    <script>
+        // Use a função fetch para obter o conteúdo da página web
+        fetch('https://api.allorigins.win/raw?url=https://ondebola.com/')
+            .then(response => response.text())
+            .then(data => {
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(data, 'text/html');
+
+                // Encontre a tabela desejada na página
+                const table = doc.querySelector('.table.table-striped.table-games');
+                const rows = Array.from(table.querySelectorAll('tr'));
+
+                // Inserir dados na tabela HTML
+                const tableDataElement = document.getElementById('tableData');
+                rows.forEach((row, index) => {
+                    const cells = Array.from(row.querySelectorAll(index === 0 ? 'th' : 'td'));
+                    const tableRow = document.createElement('tr');
+                    cells.forEach(cell => {
+                        const tableCell = document.createElement(index === 0 ? 'th' : 'td');
+                        tableCell.textContent = cell.textContent;
+                        tableRow.appendChild(tableCell);
+                    });
+                    tableDataElement.appendChild(tableRow);
+                });
+            })
+            .catch(error => {
+                console.error('Erro ao carregar a página:', error);
+            });
+    </script>
+</body>
+</html>
